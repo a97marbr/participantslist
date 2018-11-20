@@ -34,23 +34,27 @@
 'use strict';
 var headings=["Personnummer","Namn","Kurstillfälle","Tillstånd","Läses inom"];
 var students={};
+var complete_students={};
+var course_occasions=[];
+var scraped_occasions=[];
+var ladok_list;
 
 function getpart(){
+    let ladoklist=document.getElementById("fromladok").value.split("\n");
+    for(let i=0;i<ladoklist.length;i++){
+        let sdata=ladoklist[i].split(";");
+        let ssn;
+        for(let j=0;j<sdata.length;j++){
+            if(j===0){
+                ssn=sdata[j];
+                students[ssn]={}; 
 
-  let ladoklist=document.getElementById("fromladok").value.split("\n");
-  for(let i=0;i<ladoklist.length;i++){
-    	let sdata=ladoklist[i].split(";");
-    	let ssn;
-    	for(let j=0;j<sdata.length;j++){
-        	if(j===0){
-            	ssn=sdata[j];
-           		students[ssn]={}; 
-            	
-          }else{
-            	students[ssn][headings[j]]=sdata[j];
-          }					
-      }
-  }  
+            }else{
+                students[ssn][headings[j]]=sdata[j];
+            }					
+        }
+    }
+  	localStorage.setItem('ladoklist', JSON.stringify(students));
 }
 
 function gethispart(){
@@ -64,21 +68,24 @@ function gethispart(){
             	//console.log(email.split("@")[0]);
             	//console.log(ssn);
               if(typeof(students[ssn])!=="undefined"){
-                  students[ssn]["email"]=email;
-                  students[ssn]["username"]=email.split("@")[0];  
+									complete_students[ssn]=JSON.parse(JSON.stringify(students[ssn]));
+                  complete_students[ssn]["email"]=email;
+                  complete_students[ssn]["username"]=email.split("@")[0];  
               }else{
-                  alert(ssn+" not in LADOK list!");
+                  alert(ssn+" "+email+" not in LADOK list!");
               }
           }
       });    
   });
   //console.log(students)
-  renderList(students);
+  localStorage.setItem('completelist', JSON.stringify(complete_students));
+  renderList("partlist",complete_students);
+  
 }
 
 
-function renderList(students){
-  let partlist=document.getElementById("partlist");
+function renderList(id,students){
+  let partlist=document.getElementById(id);
   partlist.value="";
   // from stackoverflow: https://stackoverflow.com/questions/921789/how-to-loop-through-a-plain-javascript-object-with-the-objects-as-members
   for (var ssn in students) {
@@ -89,8 +96,8 @@ function renderList(students){
     let str=ssn;
     
     if (typeof(s.username)==="undefined"){
-      	alert(ssn + "not in HIS list!"); 
-      	continue;
+      	console.log(ssn + " not in HIS list!"); 
+      	//continue;
     }
     
     for (var prop in s) {
@@ -105,11 +112,40 @@ function renderList(students){
 }
 
 function clearData(){
-  localStorage.clear("partlist");
-  document.getElementById("partlist").value="";
+    localStorage.clear("ladoklist");
+    document.getElementById("fromladok").value="";
+    localStorage.clear("completelist");
+    document.getElementById("partlist").value="";
 }
 
 $(document).ready(function(){
-    $("body").append("<div style='width:440px;padding:8px;height:600px;top:255px;right:20px;background-color:#def;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;z-index:15000'><h3>From Ladok</h3><textarea id='fromladok' style='width:390px;height:200px;'></textarea><h3>Complete list</h3><textarea id='partlist' style='width:390px;height:200px;'></textarea><input id='scraper' type='button' value='Scrape'><input type='button' value='Clear' onclick='clearData();'></div>");  
+    $("body").append("<div style='width:440px;padding:8px;height:600px;top:255px;right:20px;background-color:#def;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;z-index:15000'><h3>From Ladok</h3><textarea id='fromladok' style='width:390px;height:200px;'></textarea><h3>Complete list</h3><textarea id='partlist' style='width:390px;height:200px;'></textarea><input id='scraper' type='button' value='Scrape'><input id='clearer' type='button' value='Clear' ></div>");  
     $("#scraper").click(gethispart);
+    $("#clearer").click(clearData);  
+  	$("input[name='select-program-occation']").each(function(){
+      	//<input checked="checked" class="radio-button" data-val="21195" data-val-required="The select-program-occation field is required." id="select-program-occation_21195" name="select-program-occation" type="radio" value="21195">
+    		console.log(this);
+      	
+    });
+  
+    let ladok_json=localStorage.getItem('ladoklist');             
+    if (ladok_json===null){
+	      students={};
+    }else{
+  	    students=JSON.parse(ladok_json);
+    	  renderList("fromladok",students);
+    }
+                  
+
+    let complete_json=localStorage.getItem('completelist'); 
+
+    if (complete_json===null){
+	      complete_students={};
+      	console.log("No complete list found!");
+    }else{
+  	    complete_students=JSON.parse(complete_json);
+    	  renderList("partlist",complete_students);
+    }
+
+  
 });

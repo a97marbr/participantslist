@@ -75,7 +75,7 @@ function renderList(students){
       if(!s.hasOwnProperty(prop)) continue;
 
       // separate with ; instead of ,
-      str+="; "+s[prop];
+      str+=";"+s[prop];
     }                
     partlist.value+=str+"\n";
   }
@@ -87,9 +87,10 @@ function clearData(){
 }
 
 $(document).ready(function(){
-  $("body").append("<div style='width:440px;padding:8px;height:300px;top:455px;right:20px;background-color:#def;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;'><textarea id='partlist' style='width:390px;height:200px;'></textarea><input id='scraper' type='button' value='Scrape'><input id='clearbtn' type='button' value='Clear'></div>");
+  $("body").append("<div id='partlistcontainer' style='width:440px;height:300px;top:455px;right:20px;background-color:#def;box-shadow:4px 4px 4px #000;position:fixed;'><div style='background-color:#614875;margin:0;height:30px;display:flex;justify-content:flex-end;'><div id='closebtn' style='width: 30px;background-color: #f00;color: #fff;font-weight: 900;height: 30px;text-align: center;line-height: 30px;'>X</div></div><div style='padding:8px;'><textarea id='partlist' style='width:390px;height:200px;'></textarea><input id='scraper' type='button' value='Scrape'><input id='clearbtn' type='button' value='Clear'></div></div>");
 	$("#scraper").click(getpart);
   $("#clearbtn").click(clearData);
+  $("#closebtn").click(function(){document.getElementById("partlistcontainer").style.display="none"});
   
   let json=localStorage.getItem('partlist');             
   if (json===null){

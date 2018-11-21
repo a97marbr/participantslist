@@ -119,9 +119,10 @@ function clearData(){
 }
 
 $(document).ready(function(){
-    $("body").append("<div style='width:440px;padding:8px;height:600px;top:255px;right:20px;background-color:#def;box-shadow:4x 4px 4px #000;border:1px solid red;position:fixed;z-index:15000'><h3>From Ladok</h3><textarea id='fromladok' style='width:390px;height:200px;'></textarea><h3>Complete list</h3><textarea id='partlist' style='width:390px;height:200px;'></textarea><input id='scraper' type='button' value='Scrape'><input id='clearer' type='button' value='Clear' ></div>");  
+    $("body").append("<div id='partlistmonkeycontainer' style='width:440px;height:600px;top:255px;right:20px;background-color:#def;box-shadow:4px 4px 4px #000;position:fixed;z-index:15000'><div style='background-color:#614875;margin:0;height:30px;display:flex;justify-content:flex-end;'><div id='closebtn' style='width: 30px;background-color: #f00;color: #fff;font-weight: 900;height: 30px;text-align: center;line-height: 30px;'>X</div></div><div style='padding:8px;'><h3>From Ladok</h3><textarea id='fromladok' style='width:390px;height:200px;'></textarea><h3>Complete list</h3><textarea id='partlist' style='width:390px;height:200px;'></textarea><input id='scraper' type='button' value='Scrape'><input id='clearer' type='button' value='Clear' ></div></div>");  
     $("#scraper").click(gethispart);
-    $("#clearer").click(clearData);  
+    $("#clearer").click(clearData);
+  	$("#closebtn").click(function(){document.getElementById("partlistmonkeycontainer").style.display="none"});
   	$("input[name='select-program-occation']").each(function(){
       	//<input checked="checked" class="radio-button" data-val="21195" data-val-required="The select-program-occation field is required." id="select-program-occation_21195" name="select-program-occation" type="radio" value="21195">
     		console.log(this);
@@ -146,6 +147,5 @@ $(document).ready(function(){
   	    complete_students=JSON.parse(complete_json);
     	  renderList("partlist",complete_students);
     }
-
   
 });
